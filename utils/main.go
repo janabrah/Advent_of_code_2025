@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -62,4 +63,26 @@ func SortIntArray(input []int) []int {
 		}
 	}
 	return result
+}
+
+func PrettyPrint1D(input []string) {
+	for _, v := range input {
+		fmt.Println(v)
+	}
+}
+
+func PrettyPrint2DString(input [][]string, spacer string) {
+	for _, v := range input {
+		fmt.Println(strings.Join(v, spacer))
+	}
+}
+
+func PrettyPrint2DInt(input [][]int, spacer string) {
+	for _, v := range input {
+		var stringArray []string
+		for _, s := range v {
+			stringArray = append(stringArray, strconv.Itoa(s))
+		}
+		fmt.Println(strings.Join(stringArray, spacer))
+	}
 }
