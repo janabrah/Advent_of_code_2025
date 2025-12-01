@@ -7,10 +7,19 @@ import (
 	"strings"
 )
 
-func LoadFile(filename string) ([]string, error) {
-	file, err := os.ReadFile(filename)
-	if err != nil {
-		return nil, err
+func LoadFile(filenames ...string) ([]string, error) {
+	var file []byte
+	var err error
+	if len(filenames) == 1 {
+		file, err = os.ReadFile(filenames[0])
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		file, err = os.ReadFile("./inputs/" + filenames[0] + "_" + filenames[1] + ".txt")
+		if err != nil {
+			return nil, err
+		}
 	}
 	stringFile := string(file)
 	result := strings.Split(stringFile, "\n")
@@ -22,16 +31,13 @@ func GetNumbers(input []string, divider string) ([][]int, error) {
 	for _, v := range input {
 		row := make([]int, 0, 2)
 		split := strings.Split(v, divider)
-		left, err := strconv.Atoi(split[0])
-		if err != nil {
-			return nil, err
+		for _, x := range split {
+			val, err := strconv.Atoi(x)
+			if err != nil {
+				return nil, err
+			}
+			row = append(row, val)
 		}
-		row = append(row, left)
-		right, err := strconv.Atoi(split[1])
-		if err != nil {
-			return nil, err
-		}
-		row = append(row, right)
 		result = append(result, row)
 	}
 	return result, nil
