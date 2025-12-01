@@ -7,12 +7,12 @@ import (
 )
 
 func main() {
-	exampleInput, err := getFiles("./inputs/day_2_example.txt")
+	exampleInput, err := getFiles("example")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	realInput, err := getFiles("./inputs/day_2_real.txt")
+	realInput, err := getFiles("real")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -31,8 +31,8 @@ func partTwo(input []string) {
 	fmt.Println(input[0])
 }
 
-func getFiles(filename string) ([]string, error) {
-	file, err := utils.LoadFile(filename)
+func getFiles(version string) ([]string, error) {
+	file, err := utils.LoadFile("day_2", version)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
