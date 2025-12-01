@@ -21,8 +21,12 @@ func partOne(input []string) {
 	val := 50
 	for _, v := range input {
 		if len(v) > 0 {
-			distance, _ := integerPart(v)
-			if startsWithL(v) {
+			distance, err := integerPart(v)
+			if err != nil {
+				fmt.Println("There was en error: ", err)
+				return
+			}
+			if v[0] == 'L' {
 				val -= distance
 				val %= 100
 				if val == 0 {
@@ -46,17 +50,19 @@ func partTwo(input []string) {
 	for _, v := range input {
 		if len(v) > 0 {
 			oldval := val
-			distance, _ := integerPart(v)
-			if startsWithL(v) {
+			distance, err := integerPart(v)
+			if err != nil {
+				fmt.Println("There was en error: ", err)
+				return
+			}
+			if v[0] == 'L' {
 				val -= distance
 				if val == 0 {
 					count += 1
 				} else if oldval > 0 && val < 0 {
 					count += 1
 				}
-				if val <= -100 {
-					count += val / -100
-				}
+				count += val / -100
 				val %= 100
 			} else {
 				val += distance
@@ -65,19 +71,12 @@ func partTwo(input []string) {
 				} else if oldval < 0 && val > 0 {
 					count += 1
 				}
-				if val >= 100 {
-					count += val / 100
-				}
+				count += val / 100
 				val %= 100
 			}
 		}
 	}
 	fmt.Println(count)
-}
-
-func startsWithL(input string) bool {
-	runes := []rune(input)
-	return runes[0] == 'L'
 }
 
 func integerPart(input string) (int, error) {
@@ -96,10 +95,5 @@ func getFiles(version string) ([]string, error) {
 		fmt.Println(err)
 		return nil, err
 	}
-	// parsed, err := utils.GetNumbers(file, "   ")
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return nil, nil
-	// }
 	return file, nil
 }
