@@ -37,21 +37,22 @@ func countAppearances(input []int) map[int]int {
 	for _, v := range input {
 		result[v] = result[v] + 1
 	}
-	fmt.Println(result)
 	return result
 }
 
 func getFiles() ([]int, []int) {
-	file, err := utils.LoadFile("./inputs/2024_day_1_real.txt")
+	file, err := utils.LoadFile("2024_day_1", "real")
 	if err != nil {
 		fmt.Println(err)
 		return nil, nil
 	}
+	utils.PrettyPrint1D(file)
 	parsed, err := utils.GetNumbers(file, "   ")
 	if err != nil {
 		fmt.Println(err)
 		return nil, nil
 	}
+	utils.PrettyPrint2DInt(parsed, "")
 	left, right := make([]int, 0, len(parsed)), make([]int, 0, len(parsed))
 	for _, v := range parsed {
 		left = append(left, v[0])
