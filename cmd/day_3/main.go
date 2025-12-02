@@ -24,7 +24,7 @@ func partTwo(input []string) {
 }
 
 func getFiles(version string) ([]string, error) {
-	file, err := utils.LoadFile("day_3", version)
+	file, err := utils.LoadFile("day_2", version)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
