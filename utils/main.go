@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -91,4 +92,20 @@ func PrettyPrint2DInt(input [][]int, spacer string) {
 		}
 		fmt.Println(strings.Join(stringArray, spacer))
 	}
+}
+
+func Substring(input string, beginning int, end int) (string, error) {
+	if beginning < 0 {
+		return "", errors.New("beginning must be nonnegative")
+	}
+	if beginning >= end {
+		return "", errors.New("beginning must be less than end")
+	}
+	runeString := []rune(input)
+	if end > len(runeString) {
+		return "", errors.New("end cannot be more than the length of the string")
+	}
+	subRunes := runeString[beginning:end]
+	result := string(subRunes)
+	return result, nil
 }
