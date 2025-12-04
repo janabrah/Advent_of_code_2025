@@ -4,17 +4,21 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/janabrah/Advent_of_code_2025/utils"
 )
 
 func main() {
+	startTime := time.Now()
 	input, err := getFiles("real")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	partTwo(input)
+	elapsed := time.Since(startTime)
+	fmt.Println("Time taken:", elapsed)
 }
 
 func partOne(input []string) {
