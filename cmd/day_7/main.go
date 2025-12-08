@@ -9,7 +9,7 @@ import (
 
 func main() {
 	startTime := time.Now()
-	input, err := getFiles("real")
+	input, err := getFiles("example")
 	if err != nil {
 		fmt.Println(err)
 		return
