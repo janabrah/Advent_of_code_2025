@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/janabrah/Advent_of_code_2025/utils"
 )
@@ -9,15 +10,15 @@ import (
 var infinity int = 100000000000 // largest input i think is 99999,99999,99999
 
 func main() {
-	// startTime := time.Now()
+	startTime := time.Now()
 	input, err := getFiles("real")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(partTwo(input))
-	// elapsed := time.Since(startTime)
-	// fmt.Println("Time taken:", elapsed)
+	fmt.Println(partTwoFast(input))
+	elapsed := time.Since(startTime)
+	fmt.Println("Time taken:", elapsed)
 }
 
 func partOne(input [][]int) int {
@@ -69,7 +70,6 @@ func partOne(input [][]int) int {
 
 func partTwo(input [][]int) int {
 	connections := map[int]map[int]bool{}
-	cycles := map[int]int{}
 	groups := []map[int]bool{}
 	for i := range input {
 		connections[i] = map[int]bool{}
@@ -77,11 +77,29 @@ func partTwo(input [][]int) int {
 	for c := 0; true; c++ {
 		i, j := findClosest(input, connections)
 		connections[i][j] = true
-		insertCycle(cycles, i, j)
 		groups = groupInsert(groups, i, j)
-		if c%100 == 0 {
+		if c%1000 == 0 {
 			fmt.Println(c, len(groups[0]))
 		}
+		if len(groups[0]) == len(input) {
+			return input[i][0] * input[j][0]
+		}
+	}
+	return 0
+}
+
+func partTwoFast(input [][]int) int {
+	distances := findDstances(input)
+	distances = sortRangesArray(distances)
+	connections := map[int]map[int]bool{}
+	groups := []map[int]bool{}
+	for i := range input {
+		connections[i] = map[int]bool{}
+	}
+	for c := 0; true; c++ {
+		i, j := findClosestFast(distances, connections)
+		connections[i][j] = true
+		groups = groupInsert(groups, i, j)
 		if len(groups[0]) == len(input) {
 			return input[i][0] * input[j][0]
 		}
@@ -211,6 +229,18 @@ func dist(p1 []int, p2 []int) int {
 	return total
 }
 
+func findDstances(options [][]int) [][]int {
+	result := [][]int{}
+	for i := range options[:len(options)-1] {
+		for j := range options[i+1:] {
+			distance := dist(options[i], options[j+i+1])
+			row := []int{distance, i, j + i + 1}
+			result = append(result, row)
+		}
+	}
+	return result
+}
+
 func findClosest(options [][]int, exclusions map[int]map[int]bool) (int, int) {
 	smallest := infinity
 	left := -1
@@ -230,6 +260,15 @@ func findClosest(options [][]int, exclusions map[int]map[int]bool) (int, int) {
 	return left, right
 }
 
+func findClosestFast(options [][]int, exclusions map[int]map[int]bool) (int, int) {
+	for _, option := range options {
+		if !exclusions[option[1]][option[2]] {
+			return option[1], option[2]
+		}
+	}
+	return -1, -1
+}
+
 func getFiles(version string) ([][]int, error) {
 	file, err := utils.LoadFile("day_8", version)
 	if err != nil {
@@ -242,4 +281,32 @@ func getFiles(version string) ([][]int, error) {
 		return nil, nil
 	}
 	return parsed, nil
+}
+
+// It seemed fun to implement my own merge sort since I wasn't sure what go's builtin was
+func sortRangesArray(input [][]int) [][]int {
+	result := make([][]int, 0, len(input))
+	if len(input) == 0 || len(input) == 1 {
+		return input
+	}
+	split := len(input) / 2
+	left := sortRangesArray(input[:split])
+	right := sortRangesArray(input[split:])
+	l, r := 0, 0
+	for l < len(left) || r < len(right) {
+		if l == len(left) {
+			result = append(result, right[r])
+			r++
+		} else if r == len(right) {
+			result = append(result, left[l])
+			l++
+		} else if left[l][0] < right[r][0] {
+			result = append(result, left[l])
+			l++
+		} else {
+			result = append(result, right[r])
+			r++
+		}
+	}
+	return result
 }
