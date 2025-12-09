@@ -13,7 +13,10 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	partTwo(input)
+	compressed, xMap, yMap := compressInput(input)
+	xInv := invertMap(xMap)
+	yInv := invertMap(yMap)
+	partTwo(compressed, xInv, yInv)
 }
 
 func partOne(input [][]int) {
@@ -21,22 +24,22 @@ func partOne(input [][]int) {
 	fmt.Println(int(findBiggest(input)))
 }
 
-func partTwo(input [][]int) {
-	startTime := time.Now()
-	fmt.Println(input)
-	fmt.Println(getVorticity(input))
+func partTwo(input [][]int, xInv map[int]int, yInv map[int]int) {
+	//startTime := time.Now()
+	//	fmt.Println(input)
+	//	fmt.Println(getVorticity(input))
 	maxX, maxY := findMaxs(input)
-	fmt.Println(maxX, maxY)
-	fmt.Println(input)
+	//	fmt.Println(maxX, maxY)
+	//	fmt.Println(input)
 	grid := makeGrid(input, maxX, maxY)
-	elapsed := time.Since(startTime)
-	fmt.Println("made grid,", "Time taken:", elapsed)
+	//elapsed := time.Since(startTime)
+	//	fmt.Println("made grid,", "Time taken:", elapsed)
 	//	utils.PrettyPrint2DRune(grid, 0)
 	grid = colorGrid(grid)
-	elapsed = time.Since(startTime)
-	fmt.Println("colored grid", "Time taken:", elapsed)
+	//	elapsed = time.Since(startTime)
+	//	fmt.Println("colored grid", "Time taken:", elapsed)
 	//	utils.PrettyPrint2DRune(grid, 0)
-	fmt.Println(findBiggest2(input, grid))
+	fmt.Println(findBiggest2(input, grid, xInv, yInv))
 }
 
 func getVorticity(input [][]int) int {
@@ -166,7 +169,7 @@ func findBiggest(input [][]int) int {
 	return biggest
 }
 
-func findBiggest2(input [][]int, grid [][]rune) int {
+func findBiggest2(input [][]int, grid [][]rune, xInv map[int]int, yInv map[int]int) int {
 	startTime := time.Now()
 
 	biggest := 0
@@ -190,7 +193,7 @@ func findBiggest2(input [][]int, grid [][]rune) int {
 				left = u[1]
 				right = v[1]
 			}
-			size := (right - left + 1) * (down - up + 1)
+			size := (yInv[right] - yInv[left] + 1) * (xInv[down] - xInv[up] + 1)
 			if size > biggest {
 				if checkExterior(u, v, grid) && checkInterior(u, v, grid) {
 					biggest = size
@@ -288,6 +291,54 @@ func findMaxs(input [][]int) (int, int) {
 		}
 	}
 	return maxX, maxY
+}
+
+func compressInput(input [][]int) ([][]int, map[int]int, map[int]int) {
+	distinctX := map[int]bool{}
+	distinctY := map[int]bool{}
+	for _, v := range input {
+		distinctX[v[0]] = true
+		distinctY[v[1]] = true
+	}
+	xs := []int{}
+	for i := range distinctX {
+		xs = append(xs, i)
+	}
+	ys := []int{}
+	for i := range distinctY {
+		ys = append(ys, i)
+	}
+	xs = utils.SortIntArray(xs)
+	ys = utils.SortIntArray(ys)
+	xMap := map[int]int{}
+	yMap := map[int]int{}
+	for i, x := range xs {
+		xMap[x] = i
+	}
+	for i, y := range ys {
+		yMap[y] = i
+	}
+	result := [][]int{}
+	for _, v := range input {
+		new := []int{xMap[v[0]], yMap[v[1]]}
+		result = append(result, new)
+	}
+	return result, xMap, yMap
+}
+
+func invertMap(input map[int]int) map[int]int {
+	result := map[int]int{}
+	for i, v := range input {
+		result[v] = i
+	}
+	return result
+}
+
+func decompress(point []int, invXMap map[int]int, invYMap map[int]int) []int {
+	x := invXMap[point[0]]
+	y := invYMap[point[1]]
+	res := []int{x, y}
+	return res
 }
 
 func getFiles(version string) ([][]int, error) {
