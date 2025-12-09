@@ -80,7 +80,25 @@ func PrettyPrint1D(input []string) {
 
 func PrettyPrint2DString(input [][]string, spacer string) {
 	for _, v := range input {
+		for i := range v {
+			if v[i] == "" {
+				v[i] = " "
+			}
+		}
 		fmt.Println(strings.Join(v, spacer))
+	}
+}
+
+func PrettyPrint2DRune(input [][]rune, spacer rune) {
+	for _, v := range input {
+		stringArray := []string{}
+		for i := range v {
+			if v[i] == 0 {
+				v[i] = ' '
+			}
+			stringArray = append(stringArray, string(v[i]))
+		}
+		fmt.Println(strings.Join(stringArray, string(spacer)))
 	}
 }
 
