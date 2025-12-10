@@ -9,6 +9,8 @@ import (
 	"github.com/janabrah/Advent_of_code_2025/utils"
 )
 
+var best int = 100000
+
 func main() {
 	// startTime := time.Now()
 	input, err := getFiles("real")
@@ -37,9 +39,10 @@ func partTwo(input []panel) {
 	fmt.Println(input)
 	total := 0
 	for i, row := range input {
-		presses := recursiveSolveTwo(row.joltages, row.buttonGroups, 0, 100000)
+		best = 100000
+		recursiveSolveTwo(row.joltages, row.buttonGroups, 0, 100000)
 		//fmt.Println(presses)
-		total += presses
+		total += best
 		elapsed := time.Since(startTime)
 		fmt.Println(i, "Time taken:", elapsed)
 	}
@@ -88,24 +91,18 @@ func apply(lights []bool, buttons []int) []bool {
 	return newLights
 }
 
-func recursiveSolveTwo(goal []int, buttonGroups [][]int, presses int, infinity int) int {
-	best := infinity
+func recursiveSolveTwo(goal []int, buttonGroups [][]int, presses int, infinity int) {
+	if presses >= best {
+		return
+	}
 	if isDoneTwo(goal) {
-		return presses
+		best = presses
 	}
 	if len(buttonGroups) == 0 || isPastTwo(goal) {
-		return infinity
+		return
 	}
-	test := recursiveSolveTwo(applyTwo(goal, buttonGroups[0]), buttonGroups, presses+1, infinity)
-	if test < best {
-		best = test
-	}
-	test = recursiveSolveTwo(goal, buttonGroups[1:], presses, infinity)
-	if test < best {
-		best = test
-	}
-
-	return best
+	recursiveSolveTwo(applyTwo(goal, buttonGroups[0]), buttonGroups, presses+1, infinity)
+	recursiveSolveTwo(goal, buttonGroups[1:], presses, infinity)
 }
 
 func isDoneTwo(input []int) bool {
