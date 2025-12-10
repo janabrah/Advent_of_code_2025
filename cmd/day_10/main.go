@@ -40,7 +40,7 @@ func partTwo(input []panel) {
 	total := 0
 	for i, row := range input {
 		best = 100000
-		recursiveSolveTwo(row.joltages, row.buttonGroups, 0, 100000)
+		recursiveSolveTwo(row.joltages, row.buttonGroups, 0)
 		//fmt.Println(presses)
 		total += best
 		elapsed := time.Since(startTime)
@@ -91,8 +91,8 @@ func apply(lights []bool, buttons []int) []bool {
 	return newLights
 }
 
-func recursiveSolveTwo(goal []int, buttonGroups [][]int, presses int, infinity int) {
-	if presses >= best {
+func recursiveSolveTwo(goal []int, buttonGroups [][]int, presses int) {
+	if presses+remainingMax(goal) >= best {
 		return
 	}
 	if isDoneTwo(goal) {
@@ -101,8 +101,18 @@ func recursiveSolveTwo(goal []int, buttonGroups [][]int, presses int, infinity i
 	if len(buttonGroups) == 0 || isPastTwo(goal) {
 		return
 	}
-	recursiveSolveTwo(applyTwo(goal, buttonGroups[0]), buttonGroups, presses+1, infinity)
-	recursiveSolveTwo(goal, buttonGroups[1:], presses, infinity)
+	recursiveSolveTwo(applyTwo(goal, buttonGroups[0]), buttonGroups, presses+1)
+	recursiveSolveTwo(goal, buttonGroups[1:], presses)
+}
+
+func remainingMax(input []int) int {
+	highest := 0
+	for _, v := range input {
+		if v > highest {
+			highest = v
+		}
+	}
+	return highest
 }
 
 func isDoneTwo(input []int) bool {
